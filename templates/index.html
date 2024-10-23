@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Gestión de Productos</title>
+    <style>
+        .edit-form {
+            display: none; /* Oculta el formulario de edición por defecto */
+        }
+        #nuevo-producto {
+            display: none; /* Oculta el formulario de nuevo producto por defecto */
+        }
+    </style>
+    <script>
+        function toggleEditForm(id) {
+            const form = document.getElementById('edit-form-' + id);
+            form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+        }
+
+        function toggleNuevoProducto() {
+            const form = document.getElementById('nuevo-producto');
+            form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+        }
+
+        // Al cargar la página, aseguramos que los formularios estén ocultos
+        window.onload = function() {
+            // Aseguramos que el formulario de nuevo producto esté oculto
+            document.getElementById('nuevo-producto').style.display = 'none'; 
+            // Opcionalmente, ocultamos todos los formularios de edición también
+            const editForms = document.getElementsByClassName('edit-form');
+            for (let form of editForms) {
+                form.style.display = 'none'; // Aseguramos que todos los formularios de edición estén ocultos
+            }
+        };
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>SEGUNDO PARCIAL TEM-742</h1>
+        <p>NOMBRE : ARNALDO ALDO SALVA PACO</p>
+        <p>CARNET: 9231195L.P.</p>
+    </div>
+        
+    <h2>Gestión de productos</h2>
+    <button onclick="toggleNuevoProducto()" class="nuevo-producto">Nuevo Producto</button> <!-- Botón para mostrar el formulario de nuevo producto -->
+
+    <form action="/agregar" method="post" id="nuevo-producto">
+        <h3>Añadir nuevo producto</h3>
+        <input type="text" name="id" placeholder="ID" required>
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="number" name="cantidad" placeholder="Cantidad" required>
+        <input type="text" name="precio" placeholder="Precio" required>
+        <input type="date" name="fecha_vencimiento" placeholder="Fecha de Vencimiento" required>
+        <input type="text" name="categoria" placeholder="Categoría" required>
+        <button type="submit">Agregar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Categoría</th>
+                <th>Fecha de Vencimiento</th> <!-- Nueva columna para la fecha -->
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.id }}</td>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.cantidad }}</td>
+                <td>{{ producto.precio }}</td>
+                <td>{{ producto.categoria }}</td>
+                <td>{{ producto.fecha_vencimiento }}</td> <!-- Mostrar fecha de vencimiento -->
+                <td>
+                    <form action="/eliminar/{{ producto.id }}" method="post" style="display:inline;">
+                        <button type="submit">Eliminar</button>
+                    </form>
+                    <button onclick="toggleEditForm('{{ producto.id }}')">Editar</button>
+                    <form action="/editar/{{ producto.id }}" method="post" style="display:inline;" id="edit-form-{{ producto.id }}" class="edit-form">
+                        <input type="text" name="nombre" placeholder="Nombre" required value="{{ producto.nombre }}">
+                        <input type="number" name="cantidad" placeholder="Cantidad" required value="{{ producto.cantidad }}">
+                        <input type="text" name="precio" placeholder="Precio" required value="{{ producto.precio }}">
+                        <input type="date" name="fecha_vencimiento" required value="{{ producto.fecha_vencimiento }}"> <!-- Campo de fecha -->
+                        <input type="text" name="categoria" placeholder="Categoría" required value="{{ producto.categoria }}">
+                        <button type="submit">Guardar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>    
+</body>
+</html>
